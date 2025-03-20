@@ -1,0 +1,8 @@
+{
+  "label": "Digital Agent File (DAF)",
+  "position": 4,
+  "link": {
+    "type": "generated-index",
+    "description": "This section outlines the Digital Agent File (DAF) format, which is used to define the structure and behavior of a digital agent. The DAF format is a YAML-based format that allows for easy customization and extensibility. It is designed to be human-readable and easy to understand, making it accessible to developers and non-developers alike."
+  }
+}

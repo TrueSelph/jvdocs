@@ -1,0 +1,8 @@
+{
+  "label": "Actions",
+  "position": 3,
+  "link": {
+    "type": "generated-index",
+    "description": "This section outlines jivas actions, which are the building blocks of jivas. Actions are reusable components that can be used to perform specific tasks. They can be combined to create complex workflows and automate processes."
+  }
+}
