@@ -25,12 +25,12 @@ jobs:
       # Build the Docker image
       - name: Build Docker image
         run: |
-          docker build -t registry.v75inc.dev/jvdocs:latest .
+          docker build -t registry.v75inc.dev/jvdocs/jvdocs:latest .
 
       # Push the Docker image to the registry
       - name: Push Docker image
         run: |
-          docker push registry.v75inc.dev/jvdocs:latest
+          docker push registry.v75inc.dev/jvdocs/jvdocs:latest
 
       # Configure AWS credentials
       - name: Configure AWS credentials
@@ -66,7 +66,7 @@ jobs:
               spec:
                 containers:
                   - name: jvdocs
-                    image: registry.v75inc.dev/jvdocs:latest
+                    image: registry.v75inc.dev/jvdocs/jvdocs:latest
           ---
           apiVersion: v1
           kind: Service
