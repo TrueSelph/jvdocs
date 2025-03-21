@@ -1,0 +1,115 @@
+name: Build and Deploy JvDocs
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Log in to DockerHub or another container registry
+      - name: Log in to Docker registry
+        uses: docker/login-action@v2
+        with:
+          registry: registry.v75inc.dev
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+
+      # Build the Docker image
+      - name: Build Docker image
+        run: |
+          docker build -t registry.v75inc.dev/jvdocs:latest .
+
+      # Push the Docker image to the registry
+      - name: Push Docker image
+        run: |
+          docker push registry.v75inc.dev/jvdocs:latest
+
+      # Configure AWS credentials
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          region: ${{ secrets.AWS_REGION }}
+
+      # Update kubeconfig for EKS
+      - name: Update kubeconfig for EKS
+        run: |
+          aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ secrets.EKS_CLUSTER_NAME }}
+
+      # Deploy to EKS
+      - name: Deploy to EKS
+        run: |
+          kubectl apply -f <<EOF
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: jvdocs
+            namespace: jvdocs
+          spec:
+            replicas: 1
+            selector:
+              matchLabels:
+                app: jvdocs
+            template:
+              metadata:
+                labels:
+                  app: jvdocs
+              spec:
+                containers:
+                  - name: jvdocs
+                    image: registry.v75inc.dev/jvdocs:latest
+          ---
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: jvdocs
+            namespace: jvdocs
+          spec:
+            ports:
+              - name: http
+                protocol: TCP
+                port: 80
+                targetPort: 80
+              - name: https
+                protocol: TCP
+                port: 443
+                targetPort: 80
+            selector:
+              app: jvdocs
+            type: ClusterIP
+          ---
+          apiVersion: networking.k8s.io/v1
+          kind: Ingress
+          metadata:
+            name: jvdocs-ingress
+            namespace: jvdocs
+            annotations:
+              alb.ingress.kubernetes.io/certificate-arn: ${{ secrets.AWS_CERTIFICATE_ARN }}
+              alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
+              alb.ingress.kubernetes.io/ssl-redirect: '443'
+              alb.ingress.kubernetes.io/scheme: internet-facing
+              alb.ingress.kubernetes.io/target-type: ip
+              external-dns.alpha.kubernetes.io/hostname: jvdocs.trueselph.com
+          spec:
+            ingressClassName: alb
+            rules:
+              - host: jvdocs.trueselph.com
+                http:
+                  paths:
+                    - path: /
+                      pathType: Prefix
+                      backend:
+                        service:
+                          name: jvdocs
+                          port:
+                            number: 80
+          EOF
