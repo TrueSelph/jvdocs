@@ -89,7 +89,7 @@ JIVAS provides API endpoints to interact with the memory system:
 - **`/memory/import`**: Import memory from a file.
 - **`/memory/prune`**: Prune interactions for a specific session.
 
-For more details, refer to the [API Documentation](./api).
+For more details, refer to the [API Documentation](/docs/category/jvserve-api).
 
 ---
 

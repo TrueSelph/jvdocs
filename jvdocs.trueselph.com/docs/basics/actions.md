@@ -162,4 +162,4 @@ walker update_action :interact_graph_walker: {
 
 ---
 
-By leveraging actions, developers can build intelligent, modular, and scalable AI solutions tailored to their needs. Learn how to create and manage your own actions to enhance the capabilities of your JIVAS agents [here](../actions).
+By leveraging actions, developers can build intelligent, modular, and scalable AI solutions tailored to their needs. Learn how to create and manage your own actions to enhance the capabilities of your JIVAS agents [here](/docs/category/actions).

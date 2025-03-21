@@ -75,7 +75,7 @@ JIVAS provides several API endpoints to interact with agents:
 - **`/action/walker`**: Execute specific actions within the agent.
 - **`/export`**: Export the agent's descriptor.
 
-For more details, refer to the [API Documentation](../api).
+For more details, refer to the [API Documentation](/docs/category/jvserve-api).
 
 ---
 
